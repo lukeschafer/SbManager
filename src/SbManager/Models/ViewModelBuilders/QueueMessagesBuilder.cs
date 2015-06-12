@@ -34,7 +34,8 @@ namespace SbManager.Models.ViewModelBuilders
 
             foreach (var m in msgs)
             {
-                //be dumb so stack traces are awesomer
+                // no object initializer so stack traces are awesomer
+                // ReSharper disable once UseObjectOrCollectionInitializer
                 var msg = new Message();
 
                 msg.MessageId = m.MessageId;
@@ -57,7 +58,7 @@ namespace SbManager.Models.ViewModelBuilders
                 msg.ContentType = m.ContentType;
                 msg.IsBodyConsumed = m.IsBodyConsumed;
                 msg.DeliveryCount = m.DeliveryCount;
-                msg.CustomProperties = m.Properties.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ToString());
+                msg.CustomProperties = m.Properties.ToDictionary(kvp => kvp.Key, kvp => (kvp.Value ?? "").ToString());
                 msg.Body = m.GetBodyString();
 
                 resp.Messages.Add(msg);
