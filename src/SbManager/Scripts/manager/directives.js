@@ -1,27 +1,33 @@
-﻿$app.directive('queuelength', function () {
+﻿$app.directive('queuelength', ['messageTypeConstants', function (messageTypeConstants) {
     return {
         restrict: 'EA',
         templateUrl: window.applicationBasePath + '/Content/tmpl/directives/queuelength.html',
         link: function ($scope, $element, $attrs) {
             $scope.active = parseInt($attrs.active,10) || 0;
-            $scope.dead = parseInt($attrs.dead,10) || 0;
+            $scope.dead = parseInt($attrs.dead, 10) || 0;
+            $scope.scheduled = parseInt($attrs.scheduled, 10) || 0;
             $scope.activeHighlight = !!$scope.active;
             $scope.deadHighlight = !!$scope.dead;
+            $scope.scheduledHighlight = !!$scope.scheduled;
+            $scope.messageTypes = messageTypeConstants;
         }
     };
-});
+}]);
 $app.directive('loading', function () {
     return {
         restrict: 'EA',
         templateUrl: window.applicationBasePath + '/Content/tmpl/directives/loading.html'
     };
 });
-$app.directive('messagingentity', function () {
+$app.directive('messagingentity',['messageTypeConstants', function (messageTypeConstants) {
     return {
         restrict: 'EA',
-        templateUrl: window.applicationBasePath + '/Content/tmpl/directives/messagingEntity.html'
+        templateUrl: window.applicationBasePath + '/Content/tmpl/directives/messagingEntity.html',
+        link: function($scope) {
+            $scope.messageTypes = messageTypeConstants;
+        }
     };
-});
+}]);
 $app.directive('messagedetails', function () {
     return {
         restrict: 'EA',
@@ -46,7 +52,7 @@ $app.directive('messageproperty', function () {
         }
     };
 });
-$app.directive('peek', ['$modal', function ($modal) {
+$app.directive('peek', ['$modal', 'messageTypeConstants', function ($modal, messageTypeConstants) {
     return {
         restrict: 'EA',
         templateUrl: window.applicationBasePath + '/Content/tmpl/directives/peek.html',
@@ -58,8 +64,10 @@ $app.directive('peek', ['$modal', function ($modal) {
             $scope.viewing = null;
             $scope.searched = false;
             $scope.peekCount = 10;
-            $scope.type = dead ? "Dead Letters" : "Active Messages";
+            $scope.messageTypeDescription = dead ? "Dead Letters" : "Active Messages";
+            $scope.messageType = dead ? messageTypeConstants.dead : messageTypeConstants.active;
             $scope.messageCount = dead ? $scope.model.DeadLetterCount : $scope.model.ActiveMessageCount;
+            $scope.messageTypes = messageTypeConstants;
 
             var actionUrl = window.applicationBasePath + "/api/v1/busmanager/";
             if (dead && !topic) actionUrl += "queue/" + $scope.model.Name + "_$DeadLetterQueue";
